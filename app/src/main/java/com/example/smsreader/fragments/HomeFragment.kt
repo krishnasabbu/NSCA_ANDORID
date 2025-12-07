@@ -87,12 +87,12 @@ class HomeFragment : Fragment() {
                     return@runOnUiThread
                 }
 
-                if (response?.status == "success" && response.data != null) {
+                if (response?.status == "success" && response.players.isNotEmpty()) {
                     playersList.clear()
-                    playersList.addAll(response.data.take(5))
+                    playersList.addAll(response.players.take(5))
                     playersAdapter.notifyDataSetChanged()
                     rvRecentPlayers.visibility = View.VISIBLE
-                    tvTotalPlayers.text = response.data.size.toString()
+                    tvTotalPlayers.text = response.players.size.toString()
                 } else {
                     tvError.visibility = View.VISIBLE
                     tvError.text = response?.message ?: "Failed to load players"

@@ -70,7 +70,12 @@ object ApiService {
                     connection.errorStream?.bufferedReader()?.use { it.readText() } ?: ""
                 }
 
-                val playersResponse = gson.fromJson(response, PlayersResponse::class.java)
+                val players = gson.fromJson(response, Array<Player>::class.java).toList()
+                val playersResponse = PlayersResponse(
+                    status = "success",
+                    message = "Players loaded successfully",
+                    players = players
+                )
                 callback(playersResponse, null)
 
             } catch (e: Exception) {
