@@ -1,3 +1,13 @@
 <resources>
-    <string name="app_name">SMSReader</string>
+    <string name="app_name">Nature Space Cricket Academy</string>
+    <string name="login_title">Welcome Back</string>
+    <string name="username_hint">Phone Number</string>
+    <string name="password_hint">Password</string>
+    <string name="login_button">Sign In</string>
+    <string name="tab_players">Players</string>
+    <string name="tab_attendance">Attendance</string>
+    <string name="dashboard_title">Dashboard</string>
+    <string name="add_player">Add Player</string>
+    <string name="search_players">Search players...</string>
+    <string name="mark_attendance">Mark Attendance</string>
 </resources>

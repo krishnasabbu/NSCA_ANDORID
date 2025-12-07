@@ -1,103 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_light"
-    android:padding="16dp">
+    android:background="@color/background">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:elevation="8dp"
+        android:theme="@style/AppBarOverlay">
 
-        <!-- Welcome Section -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_welcome_card"
-            android:padding="24dp"
+            android:background="@drawable/bg_gradient_primary"
             android:orientation="vertical"
-            android:layout_marginBottom="24dp"
-            android:layout_marginTop="10dp"
-            android:gravity="center">
+            android:paddingBottom="16dp">
 
-            <TextView
-                android:id="@+id/txtWelcome"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Admin Dashboard 📊"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@android:color/transparent"
+                app:popupTheme="@style/PopupOverlay"
+                app:titleTextColor="@color/white">
 
-            <TextView
-                android:id="@+id/txtWelcomeSub"
-                android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_avatar_circle"
+                        android:contentDescription="Logo"
+                        android:padding="8dp"
+                        android:src="@android:drawable/ic_menu_compass" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txtWelcome"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/app_name"
+                            android:textColor="@color/white"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/txtUserName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Welcome back!"
+                            android:textColor="@color/off_white"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </androidx.appcompat.widget.Toolbar>
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Manage your cricket academy efficiently"
-                android:textColor="@color/green_light_text"
-                android:textSize="14sp"
-                android:layout_marginTop="6dp" />
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_tab_selected"
+                android:elevation="0dp"
+                app:tabBackground="@android:color/transparent"
+                app:tabIndicatorColor="@color/white"
+                app:tabIndicatorHeight="3dp"
+                app:tabMode="fixed"
+                app:tabSelectedTextColor="@color/white"
+                app:tabTextColor="@color/off_white" />
 
         </LinearLayout>
 
-        <!-- SECTION: Academy Overview -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Academy Overview"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_dark"
-            android:layout_marginBottom="12dp" />
+    </com.google.android.material.appbar.AppBarLayout>
 
-        <!-- Stats Grid -->
-        <GridLayout
-            android:id="@+id/statsGrid"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:columnCount="2"
-            android:alignmentMode="alignMargins"
-            android:rowOrderPreserved="false"
-            android:columnOrderPreserved="false" />
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-        <!-- SECTION: Management Tools -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Management Tools"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_dark"
-            android:layout_marginVertical="16dp" />
-
-        <!-- Quick Actions Grid -->
-        <GridLayout
-            android:id="@+id/actionsGrid"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:columnCount="2"
-            android:alignmentMode="alignMargins" />
-
-        <!-- SECTION: Recent Registrations -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Recent Registrations"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_dark"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="16dp" />
-
-        <LinearLayout
-            android:id="@+id/recentContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_white_rounded"
-            android:padding="16dp"
-            android:orientation="vertical"
-            android:elevation="4dp" />
-
-    </LinearLayout>
-</ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

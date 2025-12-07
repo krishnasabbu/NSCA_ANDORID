@@ -2,22 +2,20 @@ package com.example.smsreader
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
+import android.view.View
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import org.json.JSONObject
-import java.io.DataOutputStream
-import java.net.HttpURLConnection
-import java.net.URL
+import com.example.smsreader.api.ApiService
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var edtUsername: EditText
-    private lateinit var edtPassword: EditText
-    private lateinit var btnLogin: Button
-
-    private val LOGIN_URL = "https://script.google.com/macros/s/AKfycbws-3vOds45ba7yDXhz10qYd3ENvrHliFlS-io6Qd5h3C6Bis9b7IaY1EZPSoQDeVrA7Q/exec"
+    private lateinit var edtUsername: TextInputEditText
+    private lateinit var edtPassword: TextInputEditText
+    private lateinit var btnLogin: MaterialButton
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,72 +24,86 @@ class LoginActivity : AppCompatActivity() {
         edtUsername = findViewById(R.id.edtUsername)
         edtPassword = findViewById(R.id.edtPassword)
         btnLogin = findViewById(R.id.btnLogin)
+        progressBar = findViewById(R.id.progressBar)
 
         btnLogin.setOnClickListener {
             val username = edtUsername.text.toString().trim()
             val password = edtPassword.text.toString().trim()
 
-            if (username.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Enter username and password", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            if (validateInput(username, password)) {
+                loginUser(username, password)
             }
-
-            loginUser(username, password)
         }
     }
 
+    private fun validateInput(username: String, password: String): Boolean {
+        if (username.isEmpty()) {
+            edtUsername.error = "Phone number is required"
+            edtUsername.requestFocus()
+            return false
+        }
+
+        if (username.length < 10) {
+            edtUsername.error = "Enter a valid phone number"
+            edtUsername.requestFocus()
+            return false
+        }
+
+        if (password.isEmpty()) {
+            edtPassword.error = "Password is required"
+            edtPassword.requestFocus()
+            return false
+        }
+
+        if (password.length < 4) {
+            edtPassword.error = "Password must be at least 4 characters"
+            edtPassword.requestFocus()
+            return false
+        }
+
+        return true
+    }
+
     private fun loginUser(username: String, password: String) {
-        Thread {
-            try {
-                val url = URL(LOGIN_URL)
-                val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "POST"
-                connection.doOutput = true
-                connection.setRequestProperty("Content-Type", "application/json")
+        showLoading(true)
 
-                // Create request JSON
-                val jsonBody = """
-                    {
-                        "action": "login",
-                        "phone": "$username",
-                        "password": "$password"
-                    }
-                """.trimIndent()
+        ApiService.login(username, password) { response, error ->
+            runOnUiThread {
+                showLoading(false)
 
-                // Write the data
-                val outputStream = DataOutputStream(connection.outputStream)
-                outputStream.writeBytes(jsonBody)
-                outputStream.flush()
-                outputStream.close()
-
-                val responseCode = connection.responseCode
-                val response = connection.inputStream.bufferedReader().use { it.readText() }
-
-                runOnUiThread {
-                    if (responseCode == 200) {
-                        // Parse JSON
-                        try {
-                            val json = JSONObject(response)
-                            val status = json.getString("status")
-
-                            startActivity(Intent(this, DashboardActivity::class.java))
-                            finish()
-
-                        } catch (e: Exception) {
-                            Toast.makeText(this, "Invalid response", Toast.LENGTH_SHORT).show()
-                        }
-
-                    } else {
-                        Toast.makeText(this, "Server error: $responseCode", Toast.LENGTH_SHORT).show()
-                    }
+                if (error != null) {
+                    Toast.makeText(this, "Error: ${error.message}", Toast.LENGTH_LONG).show()
+                    return@runOnUiThread
                 }
 
-            } catch (ex: Exception) {
-                runOnUiThread {
-                    Toast.makeText(this, "Error: ${ex.message}", Toast.LENGTH_SHORT).show()
+                if (response != null && response.status == "success") {
+                    Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
+
+                    val intent = Intent(this, DashboardActivity::class.java)
+                    intent.putExtra("user_name", response.user?.name ?: "User")
+                    intent.putExtra("user_role", response.user?.role ?: "")
+                    startActivity(intent)
+                    finish()
+                } else {
+                    Toast.makeText(
+                        this,
+                        response?.message ?: "Login failed. Please check your credentials.",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
-        }.start()
+        }
+    }
+
+    private fun showLoading(show: Boolean) {
+        if (show) {
+            progressBar.visibility = View.VISIBLE
+            btnLogin.isEnabled = false
+            btnLogin.alpha = 0.5f
+        } else {
+            progressBar.visibility = View.GONE
+            btnLogin.isEnabled = true
+            btnLogin.alpha = 1f
+        }
     }
 }
-
