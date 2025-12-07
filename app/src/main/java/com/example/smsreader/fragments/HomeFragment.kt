@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -68,9 +67,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        playersAdapter = PlayersAdapter(playersList) { player ->
-            Toast.makeText(requireContext(), "Selected: ${player.name}", Toast.LENGTH_SHORT).show()
-        }
+        playersAdapter = PlayersAdapter(playersList)
         rvRecentPlayers.layoutManager = LinearLayoutManager(requireContext())
         rvRecentPlayers.adapter = playersAdapter
     }
