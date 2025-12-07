@@ -4,11 +4,27 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.smsreader.R
+import com.example.smsreader.adapters.PlayersAdapter
+import com.example.smsreader.api.ApiService
+import com.example.smsreader.models.Player
 import com.google.android.material.card.MaterialCardView
 
 class HomeFragment : Fragment() {
+
+    private lateinit var rvRecentPlayers: RecyclerView
+    private lateinit var progressBar: ProgressBar
+    private lateinit var tvError: TextView
+    private lateinit var tvViewAllPlayers: TextView
+    private lateinit var tvTotalPlayers: TextView
+    private lateinit var playersAdapter: PlayersAdapter
+    private val playersList = mutableListOf<Player>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,6 +41,15 @@ class HomeFragment : Fragment() {
         val cardPayments = view.findViewById<MaterialCardView>(R.id.cardPayments)
         val cardSession = view.findViewById<MaterialCardView>(R.id.cardSession)
 
+        rvRecentPlayers = view.findViewById(R.id.rvRecentPlayers)
+        progressBar = view.findViewById(R.id.progressBar)
+        tvError = view.findViewById(R.id.tvError)
+        tvViewAllPlayers = view.findViewById(R.id.tvViewAllPlayers)
+        tvTotalPlayers = view.findViewById(R.id.tvTotalPlayers)
+
+        setupRecyclerView()
+        loadPlayers()
+
         cardAttendance.setOnClickListener {
             navigateToAttendance()
         }
@@ -35,6 +60,47 @@ class HomeFragment : Fragment() {
 
         cardSession.setOnClickListener {
             navigateToSession()
+        }
+
+        tvViewAllPlayers.setOnClickListener {
+            navigateToPlayers()
+        }
+    }
+
+    private fun setupRecyclerView() {
+        playersAdapter = PlayersAdapter(playersList) { player ->
+            Toast.makeText(requireContext(), "Selected: ${player.name}", Toast.LENGTH_SHORT).show()
+        }
+        rvRecentPlayers.layoutManager = LinearLayoutManager(requireContext())
+        rvRecentPlayers.adapter = playersAdapter
+    }
+
+    private fun loadPlayers() {
+        progressBar.visibility = View.VISIBLE
+        tvError.visibility = View.GONE
+        rvRecentPlayers.visibility = View.GONE
+
+        ApiService.getPlayers { response, error ->
+            activity?.runOnUiThread {
+                progressBar.visibility = View.GONE
+
+                if (error != null) {
+                    tvError.visibility = View.VISIBLE
+                    tvError.text = "Failed to load players: ${error.message}"
+                    return@runOnUiThread
+                }
+
+                if (response?.status == "success" && response.data != null) {
+                    playersList.clear()
+                    playersList.addAll(response.data.take(5))
+                    playersAdapter.notifyDataSetChanged()
+                    rvRecentPlayers.visibility = View.VISIBLE
+                    tvTotalPlayers.text = response.data.size.toString()
+                } else {
+                    tvError.visibility = View.VISIBLE
+                    tvError.text = response?.message ?: "Failed to load players"
+                }
+            }
         }
     }
 
@@ -53,6 +119,12 @@ class HomeFragment : Fragment() {
     private fun navigateToSession() {
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, TrainingFragment())
+            .commit()
+    }
+
+    private fun navigateToPlayers() {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, PlayersFragment())
             .commit()
     }
 }
