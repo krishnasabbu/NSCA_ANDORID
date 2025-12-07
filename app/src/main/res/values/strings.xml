@@ -10,4 +10,12 @@
     <string name="add_player">Add Player</string>
     <string name="search_players">Search players...</string>
     <string name="mark_attendance">Mark Attendance</string>
+    <string name="player_name_hint">Player Name</string>
+    <string name="player_email_hint">Player Email</string>
+    <string name="player_age_hint">Player Age</string>
+    <string name="player_batch_hint">Player Batch</string>
+    <string name="player_specialization_hint">Specialization</string>
+
+    <string name="cancel">Cancel</string>
+    <string name="save_player">Save Player</string>
 </resources>
