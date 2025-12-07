@@ -1,2 +1,9 @@
 node_modules/
 .env
+gradlew
+.gradle/
+.idea/
+app/build/
+build/
+gradle/
+.gradlew

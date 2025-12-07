@@ -76,7 +76,7 @@ class LoginActivity : AppCompatActivity() {
                     return@runOnUiThread
                 }
 
-                if (response != null && response.status == "success") {
+                if (response != null) {
                     Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
 
                     val intent = Intent(this, DashboardActivity::class.java)
