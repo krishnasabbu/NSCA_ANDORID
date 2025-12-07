@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="cricket_green">#1B5E20</color>
-    <color name="cricket_green_dark">#0D3810</color>
-    <color name="cricket_green_light">#388E3C</color>
-    <color name="cricket_accent">#FF6F00</color>
-    <color name="cricket_accent_light">#FFA726</color>
+    <color name="primary_green">#1BAA56</color>
+    <color name="primary_green_dark">#0B8F45</color>
+    <color name="secondary_yellow">#F4C542</color>
+    <color name="secondary_yellow_light">#FFD85C</color>
+
+    <color name="cricket_green">#1BAA56</color>
+    <color name="cricket_green_dark">#0B8F45</color>
+    <color name="cricket_green_light">#1BAA56</color>
+    <color name="cricket_accent">#F4C542</color>
+    <color name="cricket_accent_light">#FFD85C</color>
 
     <color name="white">#FFFFFF</color>
     <color name="off_white">#F8F9FA</color>

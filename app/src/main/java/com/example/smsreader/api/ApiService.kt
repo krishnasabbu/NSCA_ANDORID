@@ -57,22 +57,11 @@ object ApiService {
     fun getPlayers(callback: (PlayersResponse?, Exception?) -> Unit) {
         Thread {
             try {
-                val url = URL(BASE_URL)
+                val url = URL("$BASE_URL?action=listUsers")
                 val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "POST"
-                connection.doOutput = true
-                connection.setRequestProperty("Content-Type", "application/json")
+                connection.requestMethod = "GET"
                 connection.connectTimeout = 15000
                 connection.readTimeout = 15000
-
-                val jsonBody = JSONObject().apply {
-                    put("action", "listUsers")
-                }.toString()
-
-                val outputStream = DataOutputStream(connection.outputStream)
-                outputStream.writeBytes(jsonBody)
-                outputStream.flush()
-                outputStream.close()
 
                 val responseCode = connection.responseCode
                 val response = if (responseCode == 200) {

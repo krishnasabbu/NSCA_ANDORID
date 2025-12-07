@@ -1,41 +1,112 @@
 package com.example.smsreader
 
 import android.os.Bundle
-import android.widget.TextView
+import android.view.MenuItem
+import android.widget.ImageView
+import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.viewpager2.widget.ViewPager2
-import com.example.smsreader.adapters.ViewPagerAdapter
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
+import com.example.smsreader.fragments.*
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationView
 
 class DashboardActivity : AppCompatActivity() {
 
-    private lateinit var tabLayout: TabLayout
-    private lateinit var viewPager: ViewPager2
-    private lateinit var txtUserName: TextView
-
-    private val tabTitles = arrayOf("Players", "Attendance")
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
+    private lateinit var bottomNavigation: BottomNavigationView
+    private lateinit var ivMenu: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.dashboard_activity)
+        setContentView(R.layout.activity_dashboard)
 
-        tabLayout = findViewById(R.id.tabLayout)
-        viewPager = findViewById(R.id.viewPager)
-        txtUserName = findViewById(R.id.txtUserName)
+        drawerLayout = findViewById(R.id.drawerLayout)
+        navigationView = findViewById(R.id.navigationView)
+        bottomNavigation = findViewById(R.id.bottomNavigation)
+        ivMenu = findViewById(R.id.ivMenu)
 
-        val userName = intent.getStringExtra("user_name") ?: "User"
-        txtUserName.text = "Welcome, $userName!"
+        setupBottomNavigation()
+        setupDrawer()
 
-        setupViewPager()
+        if (savedInstanceState == null) {
+            loadFragment(HomeFragment())
+        }
     }
 
-    private fun setupViewPager() {
-        val adapter = ViewPagerAdapter(this)
-        viewPager.adapter = adapter
+    private fun setupBottomNavigation() {
+        bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    loadFragment(HomeFragment())
+                    true
+                }
+                R.id.nav_training -> {
+                    loadFragment(TrainingFragment())
+                    true
+                }
+                R.id.nav_payments -> {
+                    loadFragment(PaymentsFragment())
+                    true
+                }
+                R.id.nav_profile -> {
+                    loadFragment(ProfileFragment())
+                    true
+                }
+                else -> false
+            }
+        }
+    }
 
-        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            tab.text = tabTitles[position]
-        }.attach()
+    private fun setupDrawer() {
+        ivMenu.setOnClickListener {
+            drawerLayout.openDrawer(GravityCompat.START)
+        }
+
+        navigationView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_dashboard -> {
+                    loadFragment(HomeFragment())
+                    bottomNavigation.selectedItemId = R.id.nav_home
+                }
+                R.id.nav_attendance -> {
+                    loadFragment(AttendanceFragment())
+                }
+                R.id.nav_players -> {
+                    loadFragment(PlayersFragment())
+                }
+                R.id.nav_coaches -> {
+                    Toast.makeText(this, "Coaches - Coming Soon", Toast.LENGTH_SHORT).show()
+                }
+                R.id.nav_events -> {
+                    Toast.makeText(this, "Events - Coming Soon", Toast.LENGTH_SHORT).show()
+                }
+                R.id.nav_settings -> {
+                    Toast.makeText(this, "Settings - Coming Soon", Toast.LENGTH_SHORT).show()
+                }
+                R.id.nav_logout -> {
+                    finish()
+                }
+            }
+            drawerLayout.closeDrawer(GravityCompat.START)
+            true
+        }
+    }
+
+    private fun loadFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, fragment)
+            .commit()
+    }
+
+    override fun onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
     }
 }
