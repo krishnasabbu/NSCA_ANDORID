@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <Button
+        android:id="@+id/btnSync"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sync Messages" />
+
+    <!-- Select Date for Sync -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Date to Sync From:"
+        android:textSize="16sp"
+        android:paddingTop="16dp" />
+
+    <DatePicker
+        android:id="@+id/datePicker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:datePickerMode="spinner"
+        android:calendarViewShown="false" />
+
+    <Button
+        android:id="@+id/btnSyncFromDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sync From Selected Date"
+        android:layout_marginTop="10dp" />
+
+    <!-- Last Sync Info Container -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
+
+        <TextView
+            android:id="@+id/txtLastSyncDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Last Sync Date: -"
+            android:textSize="16sp"
+            android:paddingBottom="4dp" />
+
+        <TextView
+            android:id="@+id/txtLastSyncTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Last Sync Time: -"
+            android:textSize="16sp"
+            android:paddingBottom="4dp" />
+
+        <TextView
+            android:id="@+id/txtLastSyncRecords"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Last Sync Records: -"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="12dp">
+
+        <TextView
+            android:id="@+id/txtMessages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp" />
+    </ScrollView>
+
+</LinearLayout>
