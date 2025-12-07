@@ -57,11 +57,22 @@ object ApiService {
     fun getPlayers(callback: (PlayersResponse?, Exception?) -> Unit) {
         Thread {
             try {
-                val url = URL("$BASE_URL?action=getPlayers")
+                val url = URL(BASE_URL)
                 val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "GET"
+                connection.requestMethod = "POST"
+                connection.doOutput = true
+                connection.setRequestProperty("Content-Type", "application/json")
                 connection.connectTimeout = 15000
                 connection.readTimeout = 15000
+
+                val jsonBody = JSONObject().apply {
+                    put("action", "listUsers")
+                }.toString()
+
+                val outputStream = DataOutputStream(connection.outputStream)
+                outputStream.writeBytes(jsonBody)
+                outputStream.flush()
+                outputStream.close()
 
                 val responseCode = connection.responseCode
                 val response = if (responseCode == 200) {
@@ -91,7 +102,7 @@ object ApiService {
                 connection.readTimeout = 15000
 
                 val jsonBody = JSONObject().apply {
-                    put("action", "addPlayer")
+                    put("action", "createUser")
                     put("name", player.name)
                     put("phone", player.phone)
                     put("email", player.email)
@@ -101,6 +112,59 @@ object ApiService {
                     put("battingStyle", player.battingStyle)
                     put("bowlingStyle", player.bowlingStyle)
                     put("monthlyFee", player.monthlyFee)
+                    put("role", "student")
+                    put("password", "cricket123")
+                }.toString()
+
+                val outputStream = DataOutputStream(connection.outputStream)
+                outputStream.writeBytes(jsonBody)
+                outputStream.flush()
+                outputStream.close()
+
+                val responseCode = connection.responseCode
+                val response = if (responseCode == 200) {
+                    connection.inputStream.bufferedReader().use { it.readText() }
+                } else {
+                    connection.errorStream?.bufferedReader()?.use { it.readText() } ?: ""
+                }
+
+                val apiResponse = gson.fromJson(response, ApiResponse::class.java)
+                callback(apiResponse, null)
+
+            } catch (e: Exception) {
+                callback(null, e)
+            }
+        }.start()
+    }
+
+    fun submitAttendance(
+        playerIds: List<String>,
+        date: String,
+        markedBy: String,
+        callback: (ApiResponse?, Exception?) -> Unit
+    ) {
+        Thread {
+            try {
+                val url = URL(BASE_URL)
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "POST"
+                connection.doOutput = true
+                connection.setRequestProperty("Content-Type", "application/json")
+                connection.connectTimeout = 15000
+                connection.readTimeout = 15000
+
+                val attendanceRecords = playerIds.map { playerId ->
+                    JSONObject().apply {
+                        put("userId", playerId)
+                        put("date", date)
+                        put("status", "present")
+                        put("markedBy", markedBy)
+                    }
+                }
+
+                val jsonBody = JSONObject().apply {
+                    put("action", "createAttendanceRecord")
+                    put("records", org.json.JSONArray(attendanceRecords))
                 }.toString()
 
                 val outputStream = DataOutputStream(connection.outputStream)

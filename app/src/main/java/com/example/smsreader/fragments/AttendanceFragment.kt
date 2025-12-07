@@ -77,11 +77,49 @@ class AttendanceFragment : Fragment() {
     private fun setupSubmitButton() {
         btnSubmitAttendance.setOnClickListener {
             val presentPlayers = attendanceAdapter.getPresentPlayers()
-            Toast.makeText(
-                context,
-                "Attendance submitted for ${presentPlayers.size} players",
-                Toast.LENGTH_SHORT
-            ).show()
+
+            if (presentPlayers.isEmpty()) {
+                Toast.makeText(context, "No players marked as present", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            submitAttendance(presentPlayers)
+        }
+    }
+
+    private fun submitAttendance(presentPlayers: List<Player>) {
+        swipeRefresh.isRefreshing = true
+        btnSubmitAttendance.isEnabled = false
+
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val date = dateFormat.format(Date())
+        val playerIds = presentPlayers.map { it.id }
+
+        ApiService.submitAttendance(playerIds, date, "admin") { response, error ->
+            activity?.runOnUiThread {
+                swipeRefresh.isRefreshing = false
+                btnSubmitAttendance.isEnabled = true
+
+                if (error != null) {
+                    Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_LONG).show()
+                    return@runOnUiThread
+                }
+
+                if (response != null && response.status == "success") {
+                    Toast.makeText(
+                        context,
+                        "Attendance submitted for ${presentPlayers.size} players",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    loadPlayers()
+                } else {
+                    Toast.makeText(
+                        context,
+                        response?.message ?: "Failed to submit attendance",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
         }
     }
 

@@ -1,5 +1,7 @@
 package com.example.smsreader.fragments
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.smsreader.AddPlayerActivity
 import com.example.smsreader.R
 import com.example.smsreader.adapters.PlayersAdapter
 import com.example.smsreader.api.ApiService
@@ -21,6 +24,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 
 class PlayersFragment : Fragment() {
+
+    companion object {
+        private const val ADD_PLAYER_REQUEST_CODE = 100
+    }
 
     private lateinit var playersRecyclerView: RecyclerView
     private lateinit var swipeRefresh: SwipeRefreshLayout
@@ -87,7 +94,15 @@ class PlayersFragment : Fragment() {
 
     private fun setupFab() {
         fabAddPlayer.setOnClickListener {
-            Toast.makeText(context, "Add player functionality coming soon", Toast.LENGTH_SHORT).show()
+            val intent = Intent(requireContext(), AddPlayerActivity::class.java)
+            startActivityForResult(intent, ADD_PLAYER_REQUEST_CODE)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == ADD_PLAYER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            loadPlayers()
         }
     }
 

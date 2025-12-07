@@ -32,6 +32,11 @@
 
         <activity android:name=".DashboardActivity" android:exported="false" />
 
+        <activity
+            android:name=".AddPlayerActivity"
+            android:exported="false"
+            android:label="Add Player" />
+
     </application>
 
 </manifest>
