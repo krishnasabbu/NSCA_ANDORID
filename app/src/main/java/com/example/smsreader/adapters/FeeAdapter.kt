@@ -5,10 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.smsreader.R
 import com.example.smsreader.models.Player
+import com.google.android.material.card.MaterialCardView
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -30,7 +30,7 @@ class FeeAdapter(private val fees: List<FeeItem>) :
         val txtPaid: TextView = view.findViewById(R.id.txtPaid)
         val txtBalance: TextView = view.findViewById(R.id.txtBalance)
         val txtStatus: TextView = view.findViewById(R.id.txtStatus)
-        val cardStatus: CardView = view.findViewById<CardView>(R.id.txtStatus).parent as CardView
+        val cardStatus: MaterialCardView = view.findViewById(R.id.cardStatus)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeeViewHolder {

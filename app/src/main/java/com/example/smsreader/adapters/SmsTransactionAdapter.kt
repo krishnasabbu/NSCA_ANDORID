@@ -5,10 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.smsreader.R
 import com.example.smsreader.models.SmsTransaction
+import com.google.android.material.card.MaterialCardView
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -17,6 +17,7 @@ class SmsTransactionAdapter(private val transactions: List<SmsTransaction>) :
     RecyclerView.Adapter<SmsTransactionAdapter.TransactionViewHolder>() {
 
     class TransactionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val cardTransaction: MaterialCardView = view.findViewById(R.id.cardTransaction)
         val txtDate: TextView = view.findViewById(R.id.txtDate)
         val txtSender: TextView = view.findViewById(R.id.txtSender)
         val txtType: TextView = view.findViewById(R.id.txtType)
@@ -25,7 +26,8 @@ class SmsTransactionAdapter(private val transactions: List<SmsTransaction>) :
         val txtUpiId: TextView = view.findViewById(R.id.txtUpiId)
         val txtTransactionId: TextView = view.findViewById(R.id.txtTransactionId)
         val txtMessage: TextView = view.findViewById(R.id.txtMessage)
-        val cardType: CardView = view.findViewById<TextView>(R.id.txtType).parent as CardView
+        val cardType: MaterialCardView = view.findViewById(R.id.cardType)
+        val expandedDetails: android.widget.LinearLayout = view.findViewById(R.id.expandedDetails)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
@@ -61,6 +63,16 @@ class SmsTransactionAdapter(private val transactions: List<SmsTransaction>) :
         } else {
             holder.txtType.setTextColor(Color.parseColor("#D32F2F"))
             holder.cardType.setCardBackgroundColor(Color.parseColor("#FFEBEE"))
+        }
+
+        holder.expandedDetails.visibility = View.GONE
+
+        holder.cardTransaction.setOnClickListener {
+            if (holder.expandedDetails.visibility == View.GONE) {
+                holder.expandedDetails.visibility = View.VISIBLE
+            } else {
+                holder.expandedDetails.visibility = View.GONE
+            }
         }
     }
 

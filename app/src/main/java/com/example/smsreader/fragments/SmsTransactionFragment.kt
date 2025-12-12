@@ -85,6 +85,13 @@ class SmsTransactionFragment : Fragment() {
         typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerTransactionType.adapter = typeAdapter
 
+        spinnerTransactionType.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
+                filterTransactions()
+            }
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
+        }
+
         edtSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -127,6 +134,13 @@ class SmsTransactionFragment : Fragment() {
         val senderAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, senders.toList())
         senderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerSender.adapter = senderAdapter
+
+        spinnerSender.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
+                filterTransactions()
+            }
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
+        }
     }
 
     private fun filterTransactions() {
