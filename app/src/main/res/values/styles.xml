@@ -1,13 +1,14 @@
 <resources>
     <style name="Theme.SmsReader" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">@color/primary_navy</item>
-        <item name="colorPrimaryVariant">@color/primary_navy_dark</item>
+        <item name="colorPrimary">@color/primary_turquoise</item>
+        <item name="colorPrimaryVariant">@color/primary_turquoise_dark</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/accent_orange</item>
-        <item name="colorSecondaryVariant">@color/accent_orange_dark</item>
+        <item name="colorSecondary">@color/primary_turquoise_light</item>
+        <item name="colorSecondaryVariant">@color/primary_teal</item>
         <item name="colorOnSecondary">@color/white</item>
-        <item name="android:statusBarColor">@color/primary_navy_dark</item>
-        <item name="android:windowBackground">@color/background</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowBackground">@color/white</item>
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
     </style>

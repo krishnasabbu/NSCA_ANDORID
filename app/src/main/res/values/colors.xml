@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary Brand Colors - Professional Navy Blue -->
-    <color name="primary_navy">#1A365D</color>
-    <color name="primary_navy_dark">#0F2744</color>
-    <color name="primary_navy_light">#2C5282</color>
-    <color name="primary_blue">#4A90E2</color>
+    <!-- Primary Brand Colors - Modern Turquoise -->
+    <color name="primary_turquoise">#00BCD4</color>
+    <color name="primary_turquoise_dark">#0097A7</color>
+    <color name="primary_turquoise_light">#4DD0E1</color>
+    <color name="primary_teal">#009688</color>
+
+    <!-- Legacy Navy (kept for compatibility) -->
+    <color name="primary_navy">#00BCD4</color>
+    <color name="primary_navy_dark">#0097A7</color>
+    <color name="primary_navy_light">#4DD0E1</color>
+    <color name="primary_blue">#00BCD4</color>
 
     <!-- Secondary Colors - Professional Slate -->
     <color name="secondary_slate">#475569</color>
@@ -17,13 +23,13 @@
     <color name="accent_orange_dark">#EA580C</color>
 
     <!-- Legacy compatibility (mapped to new colors) -->
-    <color name="primary_green">#1A365D</color>
-    <color name="primary_green_dark">#0F2744</color>
-    <color name="cricket_green">#1A365D</color>
-    <color name="cricket_green_dark">#0F2744</color>
-    <color name="cricket_green_light">#2C5282</color>
-    <color name="cricket_accent">#F97316</color>
-    <color name="cricket_accent_light">#FB923C</color>
+    <color name="primary_green">#00BCD4</color>
+    <color name="primary_green_dark">#0097A7</color>
+    <color name="cricket_green">#00BCD4</color>
+    <color name="cricket_green_dark">#0097A7</color>
+    <color name="cricket_green_light">#4DD0E1</color>
+    <color name="cricket_accent">#00BCD4</color>
+    <color name="cricket_accent_light">#4DD0E1</color>
     <color name="secondary_yellow">#F59E0B</color>
     <color name="secondary_yellow_light">#FCD34D</color>
 
@@ -61,7 +67,7 @@
     <color name="bg_light">#F8FAFC</color>
 
     <!-- Tab Colors -->
-    <color name="tab_selected">#1A365D</color>
+    <color name="tab_selected">#00BCD4</color>
     <color name="tab_unselected">#94A3B8</color>
 
     <!-- Legacy Material Colors -->
