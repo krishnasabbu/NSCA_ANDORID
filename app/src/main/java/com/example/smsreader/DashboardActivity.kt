@@ -19,6 +19,7 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var navigationView: NavigationView
     private lateinit var bottomNavigation: BottomNavigationView
     private lateinit var ivMenu: ImageView
+    private var userRole: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,11 +30,38 @@ class DashboardActivity : AppCompatActivity() {
         bottomNavigation = findViewById(R.id.bottomNavigation)
         ivMenu = findViewById(R.id.ivMenu)
 
+        getUserRole()
         setupBottomNavigation()
         setupDrawer()
+        configureMenuVisibility()
 
         if (savedInstanceState == null) {
             loadFragment(HomeFragment())
+        }
+    }
+
+    private fun getUserRole() {
+        userRole = intent.getStringExtra("user_role") ?: ""
+        if (userRole.isEmpty()) {
+            val sharedPrefs = getSharedPreferences("user_session", MODE_PRIVATE)
+            userRole = sharedPrefs.getString("user_role", "") ?: ""
+        }
+    }
+
+    private fun configureMenuVisibility() {
+        val menu = bottomNavigation.menu
+
+        when {
+            userRole.equals("Super Admin", ignoreCase = true) -> {
+            }
+            userRole.equals("admin", ignoreCase = true) -> {
+                menu.findItem(R.id.nav_messages)?.isVisible = false
+            }
+            else -> {
+                menu.findItem(R.id.nav_messages)?.isVisible = false
+                menu.findItem(R.id.nav_fees)?.isVisible = false
+                menu.findItem(R.id.nav_sms)?.isVisible = false
+            }
         }
     }
 
