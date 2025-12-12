@@ -29,14 +29,13 @@
                 android:padding="32dp">
 
                 <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="16dp"
-                    android:background="@drawable/bg_avatar_circle"
-                    android:contentDescription="Logo"
-                    android:padding="16dp"
-                    android:src="@android:drawable/ic_menu_compass" />
+                    android:layout_marginBottom="24dp"
+                    android:contentDescription="Cricket Academy Logo"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/logo" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -44,9 +43,10 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginBottom="8dp"
                     android:text="@string/app_name"
-                    android:textColor="@color/cricket_green"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
+                    android:textColor="@color/primary_navy"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.01" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -55,7 +55,7 @@
                     android:layout_marginBottom="32dp"
                     android:text="@string/login_title"
                     android:textColor="@color/text_secondary"
-                    android:textSize="16sp" />
+                    android:textSize="15sp" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
@@ -67,10 +67,10 @@
                     app:boxCornerRadiusBottomStart="12dp"
                     app:boxCornerRadiusTopEnd="12dp"
                     app:boxCornerRadiusTopStart="12dp"
-                    app:boxStrokeColor="@color/cricket_green"
-                    app:hintTextColor="@color/cricket_green"
+                    app:boxStrokeColor="@color/primary_navy"
+                    app:hintTextColor="@color/primary_navy"
                     app:startIconDrawable="@android:drawable/ic_menu_call"
-                    app:startIconTint="@color/cricket_green">
+                    app:startIconTint="@color/primary_navy">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edtUsername"
@@ -91,12 +91,12 @@
                     app:boxCornerRadiusBottomStart="12dp"
                     app:boxCornerRadiusTopEnd="12dp"
                     app:boxCornerRadiusTopStart="12dp"
-                    app:boxStrokeColor="@color/cricket_green"
-                    app:hintTextColor="@color/cricket_green"
+                    app:boxStrokeColor="@color/primary_navy"
+                    app:hintTextColor="@color/primary_navy"
                     app:passwordToggleEnabled="true"
-                    app:passwordToggleTint="@color/cricket_green"
+                    app:passwordToggleTint="@color/primary_navy"
                     app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
-                    app:startIconTint="@color/cricket_green">
+                    app:startIconTint="@color/primary_navy">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edtPassword"
@@ -110,13 +110,14 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnLogin"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:backgroundTint="@color/cricket_green"
+                    android:layout_height="56dp"
+                    android:backgroundTint="@color/primary_navy"
                     android:elevation="4dp"
                     android:text="@string/login_button"
                     android:textColor="@color/white"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
+                    android:letterSpacing="0.05"
                     app:cornerRadius="12dp" />
 
                 <ProgressBar
@@ -125,7 +126,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="16dp"
-                    android:indeterminateTint="@color/cricket_green"
+                    android:indeterminateTint="@color/primary_navy"
                     android:visibility="gone" />
 
             </LinearLayout>

@@ -1,54 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary_green">#1BAA56</color>
-    <color name="primary_green_dark">#0B8F45</color>
-    <color name="secondary_yellow">#F4C542</color>
-    <color name="secondary_yellow_light">#FFD85C</color>
+    <!-- Primary Brand Colors - Professional Navy Blue -->
+    <color name="primary_navy">#1A365D</color>
+    <color name="primary_navy_dark">#0F2744</color>
+    <color name="primary_navy_light">#2C5282</color>
+    <color name="primary_blue">#4A90E2</color>
 
-    <color name="cricket_green">#1BAA56</color>
-    <color name="cricket_green_dark">#0B8F45</color>
-    <color name="cricket_green_light">#1BAA56</color>
-    <color name="cricket_accent">#F4C542</color>
-    <color name="cricket_accent_light">#FFD85C</color>
+    <!-- Secondary Colors - Professional Slate -->
+    <color name="secondary_slate">#475569</color>
+    <color name="secondary_slate_light">#64748B</color>
+    <color name="secondary_slate_dark">#334155</color>
 
+    <!-- Accent Colors -->
+    <color name="accent_orange">#F97316</color>
+    <color name="accent_orange_light">#FB923C</color>
+    <color name="accent_orange_dark">#EA580C</color>
+
+    <!-- Legacy compatibility (mapped to new colors) -->
+    <color name="primary_green">#1A365D</color>
+    <color name="primary_green_dark">#0F2744</color>
+    <color name="cricket_green">#1A365D</color>
+    <color name="cricket_green_dark">#0F2744</color>
+    <color name="cricket_green_light">#2C5282</color>
+    <color name="cricket_accent">#F97316</color>
+    <color name="cricket_accent_light">#FB923C</color>
+    <color name="secondary_yellow">#F59E0B</color>
+    <color name="secondary_yellow_light">#FCD34D</color>
+
+    <!-- Neutral Colors -->
     <color name="white">#FFFFFF</color>
-    <color name="off_white">#F8F9FA</color>
-    <color name="light_gray">#E0E0E0</color>
-    <color name="gray">#9E9E9E</color>
-    <color name="dark_gray">#616161</color>
+    <color name="off_white">#F8FAFC</color>
+    <color name="light_gray">#E2E8F0</color>
+    <color name="gray">#94A3B8</color>
+    <color name="dark_gray">#64748B</color>
     <color name="black">#000000</color>
+    <color name="almost_black">#1E293B</color>
 
-    <color name="text_primary">#212121</color>
-    <color name="text_secondary">#757575</color>
-    <color name="text_hint">#BDBDBD</color>
+    <!-- Text Colors -->
+    <color name="text_primary">#1E293B</color>
+    <color name="text_secondary">#64748B</color>
+    <color name="text_hint">#94A3B8</color>
+    <color name="text_light">#94A3B8</color>
+    <color name="text_dark">#1E293B</color>
+    <color name="text_gray">#64748B</color>
 
-    <color name="success">#4CAF50</color>
-    <color name="error">#F44336</color>
-    <color name="warning">#FF9800</color>
-    <color name="info">#2196F3</color>
+    <!-- Status Colors -->
+    <color name="success">#10B981</color>
+    <color name="success_light">#34D399</color>
+    <color name="error">#EF4444</color>
+    <color name="error_light">#F87171</color>
+    <color name="warning">#F59E0B</color>
+    <color name="warning_light">#FCD34D</color>
+    <color name="info">#3B82F6</color>
+    <color name="info_light">#60A5FA</color>
 
+    <!-- Background Colors -->
+    <color name="background">#F8FAFC</color>
+    <color name="background_light">#F1F5F9</color>
     <color name="card_background">#FFFFFF</color>
-    <color name="background">#F5F5F5</color>
+    <color name="bg_light">#F8FAFC</color>
 
-    <color name="tab_selected">#1B5E20</color>
-    <color name="tab_unselected">#9E9E9E</color>
+    <!-- Tab Colors -->
+    <color name="tab_selected">#1A365D</color>
+    <color name="tab_unselected">#94A3B8</color>
 
-    <color name="text_light">#777777</color>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="green_primary">#2E7D32</color>
-    <color name="green_light_text">#E8F5E8</color>
-
-    <color name="yellow_primary">#FFD600</color>
-    <color name="orange_primary">#FF6B35</color>
-    <color name="blue_primary">#1976D2</color>
-    <color name="purple_primary">#9C27B0</color>
-
-    <color name="text_dark">#333333</color>
-    <color name="text_gray">#777777</color>
-    <color name="bg_light">#F8F9FA</color>
-    <color name="background_light">#F7F8FA</color>
+    <!-- Legacy Material Colors -->
+    <color name="purple_200">#C4B5FD</color>
+    <color name="purple_500">#8B5CF6</color>
+    <color name="purple_700">#6D28D9</color>
+    <color name="teal_200">#5EEAD4</color>
+    <color name="teal_700">#0F766E</color>
+    <color name="green_primary">#10B981</color>
+    <color name="green_light_text">#D1FAE5</color>
+    <color name="yellow_primary">#F59E0B</color>
+    <color name="orange_primary">#F97316</color>
+    <color name="blue_primary">#3B82F6</color>
+    <color name="purple_primary">#8B5CF6</color>
 </resources>
