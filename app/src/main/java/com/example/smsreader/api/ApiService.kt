@@ -18,8 +18,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 object ApiService {
-    private const val BASE_URL = "https://script.google.com/macros/s/AKfycbws-3vOds45ba7yDXhz10qYd3ENvrHliFlS-io6Qd5h3C6Bis9b7IaY1EZPSoQDeVrA7Q/exec"
-    private const val ATTENDANCE_URL = "https://script.google.com/macros/s/AKfycbxILCozs9pa-_wmqCLYIOsHYlzdmCzeSVqmhLVlFljIz1grN6-0XtiKuxotu6pvSZUxdA/exec"
+    private const val BASE_URL = "https://script.google.com/macros/s/AKfycbwrXvBLtU9goiI7lJNPV4ArDzSAMMdqSphH0fXHGmK_v1r2xm1J4Zcuy2favVKBJh4iNQ/exec"
     private val gson = Gson()
 
     fun login(phone: String, password: String, callback: (Player?, Exception?) -> Unit) {
@@ -173,7 +172,7 @@ object ApiService {
     ) {
         Thread {
             try {
-                val url = URL("$ATTENDANCE_URL?action=listAttendanceRecords&date=$date")
+                val url = URL("$BASE_URL?action=listAttendanceRecords&date=$date")
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
                 connection.connectTimeout = 15000
@@ -202,7 +201,7 @@ object ApiService {
     ) {
         Thread {
             try {
-                val url = URL(ATTENDANCE_URL)
+                val url = URL(BASE_URL)
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "POST"
                 connection.doOutput = true
@@ -221,6 +220,7 @@ object ApiService {
                 }
 
                 val jsonBody = JSONObject().apply {
+                    put("action", "createAttendanceRecords")
                     put("markedBy", markedBy)
                     put("records", recordsArray)
                 }.toString()
