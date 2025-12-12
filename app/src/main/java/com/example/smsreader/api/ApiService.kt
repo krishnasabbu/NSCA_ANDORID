@@ -124,7 +124,7 @@ object ApiService {
                 outputStream.close()
 
                 val responseCode = connection.responseCode
-                val response = if (responseCode == 200) {
+                val response = if (responseCode == 201) {
                     connection.inputStream.bufferedReader().use { it.readText() }
                 } else {
                     connection.errorStream?.bufferedReader()?.use { it.readText() } ?: ""

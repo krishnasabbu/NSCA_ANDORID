@@ -6,8 +6,3 @@ data class AttendanceRecordRequest(
     val date: String,
     val status: String
 )
-
-data class AttendanceRequest(
-    val markedBy: String,
-    val records: List<AttendanceRecordRequest>
-)
