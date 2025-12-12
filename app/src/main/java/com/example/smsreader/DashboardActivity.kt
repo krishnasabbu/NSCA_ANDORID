@@ -45,7 +45,7 @@ class DashboardActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_messages -> {
-                    startActivity(android.content.Intent(this, MainActivity::class.java))
+                    loadFragment(MessagesFragment())
                     true
                 }
                 R.id.nav_fees -> {

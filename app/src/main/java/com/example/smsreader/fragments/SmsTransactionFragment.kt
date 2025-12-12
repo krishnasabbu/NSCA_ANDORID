@@ -1,6 +1,5 @@
 package com.example.smsreader.fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -68,8 +67,10 @@ class SmsTransactionFragment : Fragment() {
         loadTransactions()
 
         btnSync.setOnClickListener {
-            val intent = Intent(requireContext(), MainActivity::class.java)
-            startActivity(intent)
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, MessagesFragment())
+                .addToBackStack(null)
+                .commit()
         }
     }
 
@@ -166,6 +167,18 @@ class SmsTransactionFragment : Fragment() {
 
         val adapter = SmsTransactionAdapter(filteredTransactions)
         rvSmsTransactions.adapter = adapter
+
+        updateFilteredSummary()
+    }
+
+    private fun updateFilteredSummary() {
+        val formatter = NumberFormat.getCurrencyInstance(Locale("en", "IN"))
+        val totalAmount = filteredTransactions.sumOf { it.amount }
+        val uniqueSenders = filteredTransactions.map { it.senderAddress }.distinct().size
+
+        tvTotalMessages.text = filteredTransactions.size.toString()
+        tvTotalAmount.text = formatter.format(totalAmount)
+        tvUniqueSenders.text = uniqueSenders.toString()
     }
 
     private fun updateSummary() {

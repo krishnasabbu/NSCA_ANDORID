@@ -19,6 +19,8 @@ import com.example.smsreader.models.Fee
 import com.example.smsreader.models.Player
 import com.google.android.material.button.MaterialButton
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
 
 class FeeDashboardFragment : Fragment() {
@@ -86,16 +88,18 @@ class FeeDashboardFragment : Fragment() {
 
         spinnerMonth.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
-                filterFees()
-                updateSummary()
+                if (allFees.isNotEmpty()) {
+                    calculateAndDisplayFees()
+                }
             }
             override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
         }
 
         spinnerYear.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
-                filterFees()
-                updateSummary()
+                if (allFees.isNotEmpty()) {
+                    calculateAndDisplayFees()
+                }
             }
             override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
         }
@@ -202,10 +206,18 @@ class FeeDashboardFragment : Fragment() {
     private fun calculateAndDisplayFees() {
         displayFees.clear()
 
+        val selectedMonth = spinnerMonth.selectedItemPosition
+        val selectedYear = spinnerYear.selectedItem.toString().toIntOrNull() ?: 2025
+
         allPlayers.forEach { player ->
             val expected = player.monthlyFee.toDoubleOrNull() ?: 0.0
-            val paid = allFees.filter { it.userid == player.id && it.paidType == "CREDIT" }
-                .sumOf { it.amount }
+
+            val paid = allFees.filter { fee ->
+                fee.userid == player.id &&
+                fee.paidType == "CREDIT" &&
+                isInSelectedMonth(fee.date, selectedMonth, selectedYear)
+            }.sumOf { it.amount }
+
             val balance = expected - paid
 
             displayFees.add(FeeItem(player, expected, paid, balance))
@@ -213,6 +225,18 @@ class FeeDashboardFragment : Fragment() {
 
         filterFees()
         updateSummary()
+    }
+
+    private fun isInSelectedMonth(dateString: String, month: Int, year: Int): Boolean {
+        return try {
+            val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
+            val date = format.parse(dateString) ?: return false
+            val calendar = Calendar.getInstance()
+            calendar.time = date
+            calendar.get(Calendar.MONTH) == month && calendar.get(Calendar.YEAR) == year
+        } catch (e: Exception) {
+            false
+        }
     }
 
     private fun filterFees() {
