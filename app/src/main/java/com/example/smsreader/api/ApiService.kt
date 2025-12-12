@@ -3,7 +3,6 @@ package com.example.smsreader.api
 import com.example.smsreader.models.ApiResponse
 import com.example.smsreader.models.Batch
 import com.example.smsreader.models.BatchesResponse
-import com.example.smsreader.models.LoginResponse
 import com.example.smsreader.models.Player
 import com.example.smsreader.models.PlayersResponse
 import com.google.gson.Gson
@@ -18,7 +17,7 @@ object ApiService {
     private const val BASE_URL = "https://script.google.com/macros/s/AKfycbws-3vOds45ba7yDXhz10qYd3ENvrHliFlS-io6Qd5h3C6Bis9b7IaY1EZPSoQDeVrA7Q/exec"
     private val gson = Gson()
 
-    fun login(phone: String, password: String, callback: (LoginResponse?, Exception?) -> Unit) {
+    fun login(phone: String, password: String, callback: (Player?, Exception?) -> Unit) {
         Thread {
             try {
                 val url = URL(BASE_URL)
@@ -47,8 +46,8 @@ object ApiService {
                     connection.errorStream?.bufferedReader()?.use { it.readText() } ?: ""
                 }
 
-                val loginResponse = gson.fromJson(response, LoginResponse::class.java)
-                callback(loginResponse, null)
+                val player = gson.fromJson(response, Player::class.java)
+                callback(player, null)
 
             } catch (e: Exception) {
                 callback(null, e)

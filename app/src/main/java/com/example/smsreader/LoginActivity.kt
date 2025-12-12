@@ -67,7 +67,7 @@ class LoginActivity : AppCompatActivity() {
     private fun loginUser(username: String, password: String) {
         showLoading(true)
 
-        ApiService.login(username, password) { response, error ->
+        ApiService.login(username, password) { player, error ->
             runOnUiThread {
                 showLoading(false)
 
@@ -76,28 +76,28 @@ class LoginActivity : AppCompatActivity() {
                     return@runOnUiThread
                 }
 
-                if (response != null && response.status == "success" && response.user != null) {
+                if (player != null && player.id.isNotEmpty()) {
                     val sharedPrefs = getSharedPreferences("user_session", MODE_PRIVATE)
                     sharedPrefs.edit().apply {
-                        putString("user_id", response.user.id)
-                        putString("user_name", response.user.name)
-                        putString("user_role", response.user.role)
-                        putString("user_phone", response.user.phone)
-                        putString("user_email", response.user.email)
+                        putString("user_id", player.id)
+                        putString("user_name", player.name)
+                        putString("user_role", player.role)
+                        putString("user_phone", player.phone)
+                        putString("user_email", player.email)
                         apply()
                     }
 
                     Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
 
                     val intent = Intent(this, DashboardActivity::class.java)
-                    intent.putExtra("user_name", response.user.name)
-                    intent.putExtra("user_role", response.user.role)
+                    intent.putExtra("user_name", player.name)
+                    intent.putExtra("user_role", player.role)
                     startActivity(intent)
                     finish()
                 } else {
                     Toast.makeText(
                         this,
-                        response?.message ?: "Login failed. Please check your credentials.",
+                        "Login failed. Please check your credentials.",
                         Toast.LENGTH_LONG
                     ).show()
                 }
