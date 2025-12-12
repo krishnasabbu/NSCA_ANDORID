@@ -1,12 +1,15 @@
 package com.example.smsreader.adapters
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.smsreader.PlayerDetailsActivity
 import com.example.smsreader.R
 import com.example.smsreader.models.Player
+import com.google.gson.Gson
 
 class PlayersAdapter(private val players: List<Player>) :
     RecyclerView.Adapter<PlayersAdapter.PlayerViewHolder>() {
@@ -38,6 +41,12 @@ class PlayersAdapter(private val players: List<Player>) :
         holder.txtPlayerPhone.text = "Phone: ${player.phone}"
         holder.txtPlayerBatch.text = player.batch.ifEmpty { "No Batch" }
         holder.txtPlayerRole.text = player.role.ifEmpty { "Student" }
+
+        holder.itemView.setOnClickListener {
+            val intent = Intent(holder.itemView.context, PlayerDetailsActivity::class.java)
+            intent.putExtra("player", Gson().toJson(player))
+            holder.itemView.context.startActivity(intent)
+        }
     }
 
     override fun getItemCount() = players.size

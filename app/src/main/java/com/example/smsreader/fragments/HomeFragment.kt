@@ -22,6 +22,8 @@ class HomeFragment : Fragment() {
     private lateinit var tvError: TextView
     private lateinit var tvViewAllPlayers: TextView
     private lateinit var tvTotalPlayers: TextView
+    private lateinit var tvTotalCoaches: TextView
+    private lateinit var tvTotalOrganizers: TextView
     private lateinit var playersAdapter: PlayersAdapter
     private val playersList = mutableListOf<Player>()
 
@@ -45,6 +47,8 @@ class HomeFragment : Fragment() {
         tvError = view.findViewById(R.id.tvError)
         tvViewAllPlayers = view.findViewById(R.id.tvViewAllPlayers)
         tvTotalPlayers = view.findViewById(R.id.tvTotalPlayers)
+        tvTotalCoaches = view.findViewById(R.id.tvTotalCoaches)
+        tvTotalOrganizers = view.findViewById(R.id.tvTotalOrganizers)
 
         setupRecyclerView()
         loadPlayers()
@@ -88,11 +92,20 @@ class HomeFragment : Fragment() {
                 }
 
                 if (response?.status == "success" && response.players.isNotEmpty()) {
+                    val allPlayers = response.players
+
+                    val students = allPlayers.filter { it.role.equals("student", ignoreCase = true) }
+                    val coaches = allPlayers.filter { it.role.equals("coach", ignoreCase = true) }
+                    val organizers = allPlayers.filter { it.role.equals("admin", ignoreCase = true) }
+
+                    tvTotalPlayers.text = students.size.toString()
+                    tvTotalCoaches.text = coaches.size.toString()
+                    tvTotalOrganizers.text = organizers.size.toString()
+
                     playersList.clear()
-                    playersList.addAll(response.players.take(5))
+                    playersList.addAll(students.take(5))
                     playersAdapter.notifyDataSetChanged()
                     rvRecentPlayers.visibility = View.VISIBLE
-                    tvTotalPlayers.text = response.players.size.toString()
                 } else {
                     tvError.visibility = View.VISIBLE
                     tvError.text = response?.message ?: "Failed to load players"

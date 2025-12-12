@@ -37,6 +37,11 @@
             android:exported="false"
             android:label="Add Player" />
 
+        <activity
+            android:name=".PlayerDetailsActivity"
+            android:exported="false"
+            android:label="Player Details" />
+
     </application>
 
 </manifest>
