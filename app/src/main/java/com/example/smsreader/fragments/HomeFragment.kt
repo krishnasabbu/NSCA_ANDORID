@@ -91,21 +91,32 @@ class HomeFragment : Fragment() {
                     return@runOnUiThread
                 }
 
-                if (response?.status == "success" && response.players.isNotEmpty()) {
+                if (response?.status == "success") {
                     val allPlayers = response.players
 
-                    val students = allPlayers.filter { it.role.equals("student", ignoreCase = true) }
+                    val students = allPlayers.filter {
+                        it.role.equals("student", ignoreCase = true) ||
+                        it.role.isEmpty()
+                    }
                     val coaches = allPlayers.filter { it.role.equals("coach", ignoreCase = true) }
-                    val organizers = allPlayers.filter { it.role.equals("admin", ignoreCase = true) }
+                    val organizers = allPlayers.filter {
+                        it.role.equals("admin", ignoreCase = true) ||
+                        it.role.equals("organizer", ignoreCase = true)
+                    }
 
                     tvTotalPlayers.text = students.size.toString()
                     tvTotalCoaches.text = coaches.size.toString()
                     tvTotalOrganizers.text = organizers.size.toString()
 
-                    playersList.clear()
-                    playersList.addAll(students.take(5))
-                    playersAdapter.notifyDataSetChanged()
-                    rvRecentPlayers.visibility = View.VISIBLE
+                    if (students.isNotEmpty()) {
+                        playersList.clear()
+                        playersList.addAll(students.take(5))
+                        playersAdapter.notifyDataSetChanged()
+                        rvRecentPlayers.visibility = View.VISIBLE
+                    } else {
+                        tvError.visibility = View.VISIBLE
+                        tvError.text = "No students found"
+                    }
                 } else {
                     tvError.visibility = View.VISIBLE
                     tvError.text = response?.message ?: "Failed to load players"

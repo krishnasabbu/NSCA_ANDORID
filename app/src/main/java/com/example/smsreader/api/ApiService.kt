@@ -6,8 +6,12 @@ import com.example.smsreader.models.AttendanceRequest
 import com.example.smsreader.models.AttendanceRecordRequest
 import com.example.smsreader.models.Batch
 import com.example.smsreader.models.BatchesResponse
+import com.example.smsreader.models.Fee
+import com.example.smsreader.models.FeesResponse
 import com.example.smsreader.models.Player
 import com.example.smsreader.models.PlayersResponse
+import com.example.smsreader.models.SmsTransaction
+import com.example.smsreader.models.SmsTransactionsResponse
 import com.google.gson.Gson
 import org.json.JSONArray
 import org.json.JSONObject
@@ -245,6 +249,56 @@ object ApiService {
                     message = response
                 )
                 callback(apiResponse, null)
+
+            } catch (e: Exception) {
+                callback(null, e)
+            }
+        }.start()
+    }
+
+    fun getFees(callback: (List<Fee>?, Exception?) -> Unit) {
+        Thread {
+            try {
+                val url = URL("$BASE_URL?action=listFees")
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "GET"
+                connection.connectTimeout = 15000
+                connection.readTimeout = 15000
+
+                val responseCode = connection.responseCode
+                val response = if (responseCode == 200) {
+                    connection.inputStream.bufferedReader().use { it.readText() }
+                } else {
+                    connection.errorStream?.bufferedReader()?.use { it.readText() } ?: ""
+                }
+
+                val fees = gson.fromJson(response, Array<Fee>::class.java).toList()
+                callback(fees, null)
+
+            } catch (e: Exception) {
+                callback(null, e)
+            }
+        }.start()
+    }
+
+    fun getSmsTransactions(callback: (List<SmsTransaction>?, Exception?) -> Unit) {
+        Thread {
+            try {
+                val url = URL("$BASE_URL?action=listSmsTransactions")
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "GET"
+                connection.connectTimeout = 15000
+                connection.readTimeout = 15000
+
+                val responseCode = connection.responseCode
+                val response = if (responseCode == 200) {
+                    connection.inputStream.bufferedReader().use { it.readText() }
+                } else {
+                    connection.errorStream?.bufferedReader()?.use { it.readText() } ?: ""
+                }
+
+                val transactions = gson.fromJson(response, Array<SmsTransaction>::class.java).toList()
+                callback(transactions, null)
 
             } catch (e: Exception) {
                 callback(null, e)

@@ -44,12 +44,16 @@ class DashboardActivity : AppCompatActivity() {
                     loadFragment(HomeFragment())
                     true
                 }
-                R.id.nav_training -> {
-                    loadFragment(TrainingFragment())
+                R.id.nav_messages -> {
+                    startActivity(android.content.Intent(this, MainActivity::class.java))
                     true
                 }
-                R.id.nav_payments -> {
-                    loadFragment(PaymentsFragment())
+                R.id.nav_fees -> {
+                    loadFragment(FeeDashboardFragment())
+                    true
+                }
+                R.id.nav_sms -> {
+                    loadFragment(SmsTransactionFragment())
                     true
                 }
                 R.id.nav_profile -> {
