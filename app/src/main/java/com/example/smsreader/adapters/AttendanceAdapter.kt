@@ -50,4 +50,9 @@ class AttendanceAdapter(private val players: List<Player>) :
     fun getPresentPlayers(): List<Player> {
         return players.filter { attendanceMap[it.id] == true }
     }
+
+    fun clearSelection() {
+        attendanceMap.clear()
+        notifyDataSetChanged()
+    }
 }

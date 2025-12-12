@@ -76,12 +76,22 @@ class LoginActivity : AppCompatActivity() {
                     return@runOnUiThread
                 }
 
-                if (response != null) {
+                if (response != null && response.status == "success" && response.user != null) {
+                    val sharedPrefs = getSharedPreferences("user_session", MODE_PRIVATE)
+                    sharedPrefs.edit().apply {
+                        putString("user_id", response.user.id)
+                        putString("user_name", response.user.name)
+                        putString("user_role", response.user.role)
+                        putString("user_phone", response.user.phone)
+                        putString("user_email", response.user.email)
+                        apply()
+                    }
+
                     Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
 
                     val intent = Intent(this, DashboardActivity::class.java)
-                    intent.putExtra("user_name", response.user?.name ?: "User")
-                    intent.putExtra("user_role", response.user?.role ?: "")
+                    intent.putExtra("user_name", response.user.name)
+                    intent.putExtra("user_role", response.user.role)
                     startActivity(intent)
                     finish()
                 } else {
