@@ -1,11 +1,15 @@
 package com.example.smsreader.api
 
 import com.example.smsreader.models.ApiResponse
+import com.example.smsreader.models.AttendanceRecord
+import com.example.smsreader.models.AttendanceRequest
+import com.example.smsreader.models.AttendanceRecordRequest
 import com.example.smsreader.models.Batch
 import com.example.smsreader.models.BatchesResponse
 import com.example.smsreader.models.Player
 import com.example.smsreader.models.PlayersResponse
 import com.google.gson.Gson
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.DataOutputStream
@@ -15,6 +19,7 @@ import java.net.URL
 
 object ApiService {
     private const val BASE_URL = "https://script.google.com/macros/s/AKfycbws-3vOds45ba7yDXhz10qYd3ENvrHliFlS-io6Qd5h3C6Bis9b7IaY1EZPSoQDeVrA7Q/exec"
+    private const val ATTENDANCE_URL = "https://script.google.com/macros/s/AKfycbxILCozs9pa-_wmqCLYIOsHYlzdmCzeSVqmhLVlFljIz1grN6-0XtiKuxotu6pvSZUxdA/exec"
     private val gson = Gson()
 
     fun login(phone: String, password: String, callback: (Player?, Exception?) -> Unit) {
@@ -162,43 +167,17 @@ object ApiService {
         }.start()
     }
 
-    fun submitAttendance(
-        playerIds: List<String>,
+    fun getAttendanceRecords(
         date: String,
-        markedBy: String,
-        batchId: String,
-        callback: (ApiResponse?, Exception?) -> Unit
+        callback: (List<AttendanceRecord>?, Exception?) -> Unit
     ) {
         Thread {
             try {
-                val url = URL(BASE_URL)
+                val url = URL("$ATTENDANCE_URL?action=listAttendanceRecords&date=$date")
                 val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "POST"
-                connection.doOutput = true
-                connection.setRequestProperty("Content-Type", "application/json")
+                connection.requestMethod = "GET"
                 connection.connectTimeout = 15000
                 connection.readTimeout = 15000
-
-                val attendanceRecords = playerIds.map { playerId ->
-                    JSONObject().apply {
-                        put("action", "createAttendanceRecord")
-                        put("userId", playerId)
-                        put("date", date)
-                        put("status", "present")
-                        put("markedBy", markedBy)
-                        put("batchId", batchId)
-                    }
-                }
-
-                val jsonBody = JSONObject().apply {
-                    put("action", "createAttendanceRecord")
-                    put("records", org.json.JSONArray(attendanceRecords))
-                }.toString()
-
-                val outputStream = DataOutputStream(connection.outputStream)
-                outputStream.writeBytes(jsonBody)
-                outputStream.flush()
-                outputStream.close()
 
                 val responseCode = connection.responseCode
                 val response = if (responseCode == 200) {
@@ -207,8 +186,8 @@ object ApiService {
                     connection.errorStream?.bufferedReader()?.use { it.readText() } ?: ""
                 }
 
-                val apiResponse = gson.fromJson(response, ApiResponse::class.java)
-                callback(apiResponse, null)
+                val records = gson.fromJson(response, Array<AttendanceRecord>::class.java).toList()
+                callback(records, null)
 
             } catch (e: Exception) {
                 callback(null, e)
@@ -216,17 +195,14 @@ object ApiService {
         }.start()
     }
 
-    fun markSingleAttendance(
-        userId: String,
-        date: String,
-        status: String,
+    fun submitAttendance(
         markedBy: String,
-        batchId: String,
+        records: List<AttendanceRecordRequest>,
         callback: (ApiResponse?, Exception?) -> Unit
     ) {
         Thread {
             try {
-                val url = URL(BASE_URL)
+                val url = URL(ATTENDANCE_URL)
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "POST"
                 connection.doOutput = true
@@ -234,13 +210,19 @@ object ApiService {
                 connection.connectTimeout = 15000
                 connection.readTimeout = 15000
 
+                val recordsArray = JSONArray()
+                records.forEach { record ->
+                    recordsArray.put(JSONObject().apply {
+                        put("userId", record.userId)
+                        put("sessionId", record.sessionId)
+                        put("date", record.date)
+                        put("status", record.status)
+                    })
+                }
+
                 val jsonBody = JSONObject().apply {
-                    put("action", "createAttendanceRecord")
-                    put("date", date)
-                    put("userId", userId)
-                    put("status", status)
                     put("markedBy", markedBy)
-                    put("batchId", batchId)
+                    put("records", recordsArray)
                 }.toString()
 
                 val outputStream = DataOutputStream(connection.outputStream)
@@ -255,7 +237,10 @@ object ApiService {
                     connection.errorStream?.bufferedReader()?.use { it.readText() } ?: ""
                 }
 
-                val apiResponse = gson.fromJson(response, ApiResponse::class.java)
+                val apiResponse = ApiResponse(
+                    status = if (responseCode == 200) "success" else "error",
+                    message = response
+                )
                 callback(apiResponse, null)
 
             } catch (e: Exception) {

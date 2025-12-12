@@ -17,25 +17,38 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.smsreader.R
 import com.example.smsreader.adapters.AttendanceAdapter
 import com.example.smsreader.api.ApiService
+import com.example.smsreader.models.AttendanceRecord
+import com.example.smsreader.models.AttendanceRecordRequest
 import com.example.smsreader.models.Batch
 import com.example.smsreader.models.Player
+import com.example.smsreader.models.PlayerWithAttendance
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.datepicker.MaterialDatePicker
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class AttendanceFragment : Fragment() {
 
     private lateinit var txtDate: TextView
+    private lateinit var txtSummary: TextView
     private lateinit var batchSpinner: Spinner
     private lateinit var attendanceRecyclerView: RecyclerView
     private lateinit var swipeRefresh: SwipeRefreshLayout
-    private lateinit var btnSubmitAttendance: MaterialButton
+    private lateinit var btnDatePicker: MaterialButton
+    private lateinit var btnMarkAttendance: MaterialButton
+    private lateinit var btnSelectAllAbsent: MaterialButton
 
     private lateinit var attendanceAdapter: AttendanceAdapter
-    private var playersList = mutableListOf<Player>()
+    private var allPlayers = mutableListOf<Player>()
+    private var attendanceRecords = mutableListOf<AttendanceRecord>()
+    private var playersWithAttendance = mutableListOf<PlayerWithAttendance>()
     private var batchesList = mutableListOf<Batch>()
     private var selectedBatch: Batch? = null
     private var currentUserId: String = ""
+    private var selectedDate: Long = System.currentTimeMillis()
+    private var selectedDateString: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,20 +62,24 @@ class AttendanceFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         txtDate = view.findViewById(R.id.txtDate)
+        txtSummary = view.findViewById(R.id.txtSummary)
         batchSpinner = view.findViewById(R.id.batchSpinner)
         attendanceRecyclerView = view.findViewById(R.id.attendanceRecyclerView)
         swipeRefresh = view.findViewById(R.id.swipeRefresh)
-        btnSubmitAttendance = view.findViewById(R.id.btnSubmitAttendance)
+        btnDatePicker = view.findViewById(R.id.btnDatePicker)
+        btnMarkAttendance = view.findViewById(R.id.btnMarkAttendance)
+        btnSelectAllAbsent = view.findViewById(R.id.btnSelectAllAbsent)
 
         loadCurrentUserId()
         setupDate()
+        setupDatePicker()
         setupRecyclerView()
         setupSwipeRefresh()
-        setupSubmitButton()
         setupBatchSpinner()
+        setupButtons()
 
         loadBatches()
-        loadPlayers()
+        loadData()
     }
 
     private fun loadCurrentUserId() {
@@ -70,19 +87,83 @@ class AttendanceFragment : Fragment() {
         currentUserId = sharedPrefs.getString("user_id", "") ?: ""
     }
 
+    private fun setupDate() {
+        updateDateDisplay()
+    }
+
+    private fun updateDateDisplay() {
+        val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+        val todayFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        selectedDateString = todayFormat.format(Date(selectedDate))
+
+        val calendar = Calendar.getInstance()
+        val today = todayFormat.format(calendar.time)
+
+        txtDate.text = if (selectedDateString == today) {
+            "Today"
+        } else {
+            dateFormat.format(Date(selectedDate))
+        }
+    }
+
+    private fun setupDatePicker() {
+        btnDatePicker.setOnClickListener {
+            val datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Select Date")
+                .setSelection(selectedDate)
+                .build()
+
+            datePicker.addOnPositiveButtonClickListener { selection ->
+                selectedDate = selection
+                updateDateDisplay()
+                loadData()
+            }
+
+            datePicker.show(parentFragmentManager, "DATE_PICKER")
+        }
+    }
+
     private fun setupBatchSpinner() {
         batchSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (position > 0 && position <= batchesList.size) {
-                    selectedBatch = batchesList[position - 1]
+                selectedBatch = if (position > 0 && position <= batchesList.size) {
+                    batchesList[position - 1]
                 } else {
-                    selectedBatch = null
+                    null
                 }
+                filterPlayersByBatch()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 selectedBatch = null
+                filterPlayersByBatch()
             }
+        }
+    }
+
+    private fun setupRecyclerView() {
+        attendanceAdapter = AttendanceAdapter(playersWithAttendance, isToday()) {
+            updateUI()
+        }
+        attendanceRecyclerView.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = attendanceAdapter
+        }
+    }
+
+    private fun setupSwipeRefresh() {
+        swipeRefresh.setOnRefreshListener {
+            loadData()
+        }
+    }
+
+    private fun setupButtons() {
+        btnMarkAttendance.setOnClickListener {
+            markAttendance()
+        }
+
+        btnSelectAllAbsent.setOnClickListener {
+            attendanceAdapter.selectAllAbsent()
         }
     }
 
@@ -90,7 +171,7 @@ class AttendanceFragment : Fragment() {
         ApiService.getBatches { response, error ->
             activity?.runOnUiThread {
                 if (error != null) {
-                    Toast.makeText(context, "Error loading batches: ${error.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Error loading batches: ${error.message}", Toast.LENGTH_SHORT).show()
                     return@runOnUiThread
                 }
 
@@ -98,7 +179,7 @@ class AttendanceFragment : Fragment() {
                     batchesList.clear()
                     batchesList.addAll(response.batches)
 
-                    val batchNames = mutableListOf("Select Batch")
+                    val batchNames = mutableListOf("All Batches")
                     batchNames.addAll(batchesList.map { it.name })
 
                     val adapter = ArrayAdapter(
@@ -108,117 +189,165 @@ class AttendanceFragment : Fragment() {
                     )
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     batchSpinner.adapter = adapter
+                }
+            }
+        }
+    }
+
+    private fun loadData() {
+        swipeRefresh.isRefreshing = true
+        loadPlayers()
+    }
+
+    private fun loadPlayers() {
+        ApiService.getPlayers { response, error ->
+            activity?.runOnUiThread {
+                if (error != null) {
+                    swipeRefresh.isRefreshing = false
+                    Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                    return@runOnUiThread
+                }
+
+                if (response != null && response.status == "success") {
+                    allPlayers.clear()
+                    allPlayers.addAll(response.players)
+                    loadAttendanceRecords()
                 } else {
+                    swipeRefresh.isRefreshing = false
                     Toast.makeText(
                         context,
-                        response?.message ?: "Failed to load batches",
-                        Toast.LENGTH_LONG
+                        response?.message ?: "Failed to load players",
+                        Toast.LENGTH_SHORT
                     ).show()
                 }
             }
         }
     }
 
-    private fun setupDate() {
-        val dateFormat = SimpleDateFormat("EEEE, MMM dd, yyyy", Locale.getDefault())
-        txtDate.text = dateFormat.format(Date())
-    }
-
-    private fun setupRecyclerView() {
-        attendanceAdapter = AttendanceAdapter(playersList)
-        attendanceRecyclerView.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = attendanceAdapter
-        }
-    }
-
-    private fun setupSwipeRefresh() {
-        swipeRefresh.setOnRefreshListener {
-            loadPlayers()
-        }
-    }
-
-    private fun setupSubmitButton() {
-        btnSubmitAttendance.setOnClickListener {
-            if (selectedBatch == null) {
-                Toast.makeText(context, "Please select a batch first", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val presentPlayers = attendanceAdapter.getPresentPlayers()
-
-            if (presentPlayers.isEmpty()) {
-                Toast.makeText(context, "No players marked as present", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if (currentUserId.isEmpty()) {
-                Toast.makeText(context, "User session not found. Please login again.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            submitAttendance(presentPlayers)
-        }
-    }
-
-    private fun submitAttendance(presentPlayers: List<Player>) {
-        swipeRefresh.isRefreshing = true
-        btnSubmitAttendance.isEnabled = false
-
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val date = dateFormat.format(Date())
-        val playerIds = presentPlayers.map { it.id }
-        val batchId = selectedBatch?.id ?: ""
-
-        ApiService.submitAttendance(playerIds, date, currentUserId, batchId) { response, error ->
+    private fun loadAttendanceRecords() {
+        ApiService.getAttendanceRecords(selectedDateString) { records, error ->
             activity?.runOnUiThread {
                 swipeRefresh.isRefreshing = false
-                btnSubmitAttendance.isEnabled = true
 
                 if (error != null) {
-                    Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Error loading attendance: ${error.message}", Toast.LENGTH_SHORT).show()
+                    attendanceRecords.clear()
+                } else {
+                    attendanceRecords.clear()
+                    records?.let { attendanceRecords.addAll(it) }
+                }
+
+                matchPlayersWithAttendance()
+                filterPlayersByBatch()
+            }
+        }
+    }
+
+    private fun matchPlayersWithAttendance() {
+        playersWithAttendance.clear()
+
+        allPlayers.forEach { player ->
+            val record = attendanceRecords.find { it.userId == player.id }
+            playersWithAttendance.add(PlayerWithAttendance(player, record, false))
+        }
+    }
+
+    private fun filterPlayersByBatch() {
+        val filteredList = if (selectedBatch != null) {
+            playersWithAttendance.filter { it.player.batchId == selectedBatch?.id }
+        } else {
+            playersWithAttendance
+        }
+
+        attendanceAdapter.updateData(filteredList)
+        updateUI()
+    }
+
+    private fun updateUI() {
+        val total = attendanceAdapter.getTotalCount()
+        val present = attendanceAdapter.getPresentCount()
+        val absent = attendanceAdapter.getAbsentCount()
+
+        txtSummary.text = "Total: $total | Present: $present | Absent: $absent"
+
+        val isCurrentDateToday = isToday()
+        val hasAbsentPlayers = absent > 0
+
+        if (isCurrentDateToday && hasAbsentPlayers) {
+            btnMarkAttendance.visibility = View.VISIBLE
+            btnSelectAllAbsent.visibility = View.VISIBLE
+
+            val selectedCount = attendanceAdapter.getSelectedPlayers().size
+            btnMarkAttendance.text = if (selectedCount > 0) {
+                "Mark Selected as Present ($selectedCount)"
+            } else {
+                "Mark Selected as Present"
+            }
+        } else {
+            btnMarkAttendance.visibility = View.GONE
+            btnSelectAllAbsent.visibility = View.GONE
+        }
+    }
+
+    private fun isToday(): Boolean {
+        val todayFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val today = todayFormat.format(Calendar.getInstance().time)
+        return selectedDateString == today
+    }
+
+    private fun markAttendance() {
+        val selectedPlayers = attendanceAdapter.getSelectedPlayers()
+
+        if (selectedPlayers.isEmpty()) {
+            Toast.makeText(context, "Please select at least one player", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (selectedBatch == null) {
+            Toast.makeText(context, "Please select a batch", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (currentUserId.isEmpty()) {
+            Toast.makeText(context, "User session not found. Please login again.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        swipeRefresh.isRefreshing = true
+        btnMarkAttendance.isEnabled = false
+
+        val records = selectedPlayers.map { playerWithAttendance ->
+            AttendanceRecordRequest(
+                userId = playerWithAttendance.player.id,
+                sessionId = selectedBatch!!.id,
+                date = selectedDateString,
+                status = "Present"
+            )
+        }
+
+        ApiService.submitAttendance(currentUserId, records) { response, error ->
+            activity?.runOnUiThread {
+                swipeRefresh.isRefreshing = false
+                btnMarkAttendance.isEnabled = true
+
+                if (error != null) {
+                    Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
                     return@runOnUiThread
                 }
 
                 if (response != null && response.status == "success") {
                     Toast.makeText(
                         context,
-                        "Attendance submitted for ${presentPlayers.size} players",
+                        "Attendance marked for ${selectedPlayers.size} player(s)",
                         Toast.LENGTH_SHORT
                     ).show()
                     attendanceAdapter.clearSelection()
+                    loadData()
                 } else {
                     Toast.makeText(
                         context,
                         response?.message ?: "Failed to submit attendance",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-        }
-    }
-
-    private fun loadPlayers() {
-        swipeRefresh.isRefreshing = true
-
-        ApiService.getPlayers { response, error ->
-            activity?.runOnUiThread {
-                swipeRefresh.isRefreshing = false
-
-                if (error != null) {
-                    Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_LONG).show()
-                    return@runOnUiThread
-                }
-
-                if (response != null && response.status == "success") {
-                    playersList.clear()
-                    playersList.addAll(response.players)
-                    attendanceAdapter.notifyDataSetChanged()
-                } else {
-                    Toast.makeText(
-                        context,
-                        response?.message ?: "Failed to load players",
-                        Toast.LENGTH_LONG
+                        Toast.LENGTH_SHORT
                     ).show()
                 }
             }
